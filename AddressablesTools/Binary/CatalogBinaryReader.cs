@@ -47,8 +47,46 @@ namespace AddressablesTools.Binary
             }
         }
 
+        private bool TryReadShortBasicDynamicString(long offset, bool unicode, char sep, out string value)
+        {
+            value = null;
+            if (offset < 4 || offset > BaseStream.Length - 4)
+            {
+                return false;
+            }
+
+            BaseStream.Position = offset - 4;
+            int length = ReadInt32();
+            if (length < 0 || length > BaseStream.Length - offset || (unicode && length % 2 != 0))
+            {
+                return false;
+            }
+
+            byte[] data = ReadBytes(length);
+            if (data.Length != length)
+            {
+                return false;
+            }
+
+            value = unicode ? Encoding.Unicode.GetString(data) : Encoding.ASCII.GetString(data);
+            int splitIndex = value.IndexOf(sep);
+            if (splitIndex == -1 || value.IndexOf(sep, splitIndex + 1) != -1)
+            {
+                return false;
+            }
+
+            Encoding encoding = unicode ? Encoding.Unicode : Encoding.ASCII;
+            int splitLength = encoding.GetByteCount(value[..splitIndex]) + encoding.GetByteCount(value[(splitIndex + 1)..]);
+            return splitLength < 8;
+        }
+
         private string ReadDynamicString(long offset, bool unicode, char sep)
         {
+            if (TryReadShortBasicDynamicString(offset, unicode, sep, out string value))
+            {
+                return value;
+            }
+
             BaseStream.Position = offset;
 
             List<string> partStrs = new List<string>();
