@@ -7,6 +7,8 @@ Nightly links:
 - https://nightly.link/nesrak1/AddressablesTools/workflows/build-windows/master/addrtool-example-windows.zip
 - https://nightly.link/nesrak1/AddressablesTools/workflows/build-ubuntu/master/addrtool-example-ubuntu.zip
 
+Nuget link: https://www.nuget.org/packages/AssetsTools.NET.Addressables
+
 Supported versions:
 
 .---------------------------------------------.
@@ -15,10 +17,20 @@ Supported versions:
 | Json  "v1"   | Yes          | Yes           |
 | Json  "v2"   | Yes          | Yes           |
 | Json  "v3"   | Yes          | Yes           |
-| Binv1        | Yes          | No            |
-| Binv1 "v1.1" | Yes          | No            |
+| Binv1        | Yes          | Yes*          |
+| Binv1 "v1.1" | Yes          | Yes*          |
 | Binv2        | Yes          | Yes           |
+| Binv3        | Yes*         | Yes*          |
 `---------------------------------------------`
+
+* - This support has not been thoroughly tested
+
+---
+
+To use the "Example" command line app to...
+
+- patch catalog CRCs, run `Example patchcrc path/to/catalog.json` (replace .json with .bin if your game uses .bin)
+- search for assets, run `Example searchasset path/to/catalog.json` and then type the key to search for
 
 ---
 
@@ -31,7 +43,7 @@ From there, you can access the `Resources` dictionary which contains a mapping f
 
 In the `searchasset` example below, we can look up an asset string and find all of the bundles that are needed to load it. To do so, we find all keys that contain the substring we're searching for and that have resource locations with a `ProviderId` of `BundledAssetProvider`. After that, we can look up the `Dependency` id back into the `Resources` dictionary to find all of the necessary bundles. In this list, the first item is always the bundle that contains the asset, and all other bundles are dependencies needed by the first bundle.
 
-This can be useful if you want to know what bundles you need to load in order to load an asset in a tool without having to load _every_ bundle in the game.
+This can be useful if you want to know what bundles you need to load in order to load an asset in a tool without having to load every bundle in the game.
 
 ---
 
